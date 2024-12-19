@@ -35,6 +35,19 @@ def claim_cal(dt):
         total = total + sum(lt)*300
         return total
 
+
+def total_claim(c):
+        if (c>10 and c<31):
+                c = c*100
+        elif(c>30 and c<51):
+                c = c*200
+        elif(c>50):
+                c = c*300
+        else:
+                c = 0
+        return c
+
+
 # importing data 
 data = pd.read_excel('InRisk_Labs_Assignment.xlsx')
 df = pd.DataFrame(data)
@@ -44,7 +57,7 @@ plt.boxplot(df['Rainfall_mm'])
 plt.title("Boxplot for Rainfall")
 plt.ylabel("Rainfall")
 # plt.yscale('log')
-plt.show() 
+# plt.show() 
 
 # Clearly we can see there are two outliers in the data 
 
@@ -66,45 +79,33 @@ df_outlier = df[(df['Rainfall_mm'] < lower_bound) | (df['Rainfall_mm'] > upper_b
 
 df = df[(df['Rainfall_mm'] >= lower_bound) & (df['Rainfall_mm'] <= upper_bound)]
 
+# Getting data when there is excess rainfall 
+dff = df.groupby('Region').agg({"Rainfall_mm" : lambda series: ( series > 60).sum()})
 
-# getting data according to region.
 
-reg_a = df[df['Region'] == 'Region_A' ] 
-reg_a = reg_a.reset_index(drop=True)
-reg_b = df[df['Region'] == 'Region_B' ] 
-reg_b = reg_b.reset_index(drop=True)
-reg_c = df[df['Region'] == 'Region_C' ] 
-reg_c = reg_c.reset_index(drop=True)
-reg_d = df[df['Region'] == 'Region_D' ] 
-reg_d = reg_d.reset_index(drop=True)
-reg_e = df[df['Region'] == 'Region_E' ] 
-reg_e = reg_e.reset_index(drop=True)
-
-# now find the total claim amount region wise.
-
+# ---------------------------------------------
+# Corrected Version
+# ---------------------------------------------
 
 # Region A
-claims_A = claim_cal(reg_a)
-print(claims_A)
-# there is no excess rain for consecutively for more than 10 days in region A.
+claim_a = total_claim(dff.iloc[0,0])
+# cc = excess_rain(df[df['Region'] == 'Region_A'].reset_index(drop=True))
+# print(sum(cc))
+print(claim_a)
 
 # Region B
-claims_B = claim_cal(reg_b)
-print(claims_B)
-# there is no excess rain for consecutively for more than 10 days in region B.
+claim_b = total_claim(dff.iloc[1,0])
+print(claim_b)
 
-# Region C
-claims_C = claim_cal(reg_c)
-print(claims_C)
-# there is no excess rain for consecutively for more than 10 days in region C.
+#  Region C
+claim_c = total_claim(dff.iloc[2,0])
+print(claim_c)
 
 # Region D
-claims_D = claim_cal(reg_d)
-print(claims_D)
-# there is no excess rain for consecutively for more than 10 days in region D.
+claim_d = total_claim(dff.iloc[3,0])
+print(claim_d)
 
 # Region E
-claims_E = claim_cal(reg_e)
-print(claims_E)
-# there is no excess rain for consecutively for more than 10 days in region E.
+claim_e = total_claim(dff.iloc[4,0])
+print(claim_e)
 
